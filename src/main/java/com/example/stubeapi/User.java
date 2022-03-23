@@ -1,23 +1,22 @@
 package com.example.stubeapi;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.beans.BeanProperty;
-import java.rmi.server.UID;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Entity(name = "users")
 public class User {
-    private long uuid = UUID.randomUUID().getMostSignificantBits();
+    @Id
+    private long uuidUser = UUID.randomUUID().getMostSignificantBits();
     private String userName;
     private String email;
     private String password;
+    @OneToMany(mappedBy = "user")
     private List<Video> videos = new ArrayList<>();
 
 
@@ -31,7 +30,6 @@ public class User {
         this.password = password;
     }
 
-//ResponseStatusException(HttpStatus.EXPECTATION_FAILED,"The pattern of the pass must have a number and be a length of 7 or more")
     private void checkPass(String password) throws Exception {
         if(checkPattern(password)) throw new Exception("The pattern of the pass must have a number and be a length of 7 or more");
     }
@@ -60,8 +58,8 @@ public class User {
         return password;
     }
 
-    public long getUuid() {
-        return uuid;
+    public long getUuidUser() {
+        return uuidUser;
     }
 
     public List<Video> getVideos() {
@@ -81,8 +79,12 @@ public class User {
         checkPass(password);
         this.password = password;
     }
-    public void addVideos(Video video) throws Exception {
-         videos.add(video);
+    public void addVideos(Video video,User user){
+        video.addUser(user);
+        videos.add(video);
     }
 
+    public void setVideos(List<Video> videos) {
+        this.videos = videos;
+    }
 }

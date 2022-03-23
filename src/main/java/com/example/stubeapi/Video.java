@@ -1,24 +1,34 @@
 package com.example.stubeapi;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Entity(name = "videos")
 public class Video {
+    @Id
     private long uuidVideo = UUID.randomUUID().getMostSignificantBits();
     private String urlVideo;
     private String title;
     private String description;
+    @OneToMany(mappedBy = "video")
     private List<Score> scores = new ArrayList<>();
+    @ManyToOne
+    private User user;
     public Video() {
     }
 
-    public Video(String urlVideo, String title, String description) throws Exception {
+    public Video(String urlVideo, String title, String description,User user) throws Exception {
         checkUrlVideo(urlVideo);
         checkTitle(title);
         this.urlVideo = urlVideo;
         this.title = title;
         this.description = description;
+        this.user = user;
     }
 
     private void checkTitle(String title) throws Exception{
@@ -72,8 +82,12 @@ public class Video {
         this.description = description;
     }
 
-    public void addScores(Score score) {
+    public void addScores(Score score,Video video) {
+        score.addVideo(video);
         this.scores.add(score);
     }
 
+    public void addUser(User user) {
+        this.user = user;
+    }
 }
